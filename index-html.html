@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Y Balance Test Calculator</title>
+    <meta name="description" content="Y Balance Test Calculator for Dynamic Balance Assessment">
+    <meta name="theme-color" content="#d48a9f">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 12px;
+            background: linear-gradient(to right, #f5f0e5, #f8e1e5);
+            color: #000;
+            overscroll-behavior: none;
+        }
+        h1 {
+            color: #000;
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #000;
+            text-align: center;
+            font-weight: 500;
+            margin: 25px 0 15px 0;
+            font-size: 1.4rem;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+            padding-bottom: 8px;
+        }
+        h3 {
+            color: #000;
+            font-weight: 500;
+            margin: 18px 0 10px 0;
+            font-size: 1.2rem;
+            border-left: 4px solid rgba(0, 0, 0, 0.1);
+            padding-left: 10px;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #000;
+        }
+        input[type="number"], input[type="text"], input[type="date"] {
+            width: 100%;
+            padding: 12px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px; /* Prevents iOS zoom */
+        }
+        select {
+            width: 100%;
+            padding: 12px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: white;
+            font-family: inherit;
+            font-size: 16px; /* Prevents iOS zoom */
+        }
+        
+        .therapist-select {
+            cursor: pointer;
+        }
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        @media (min-width: 600px) {
+            .input-grid {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+            body {
+                padding: 20px;
+                max-width: 800px;
+            }
+            h1 {
+                font-size: 2.2rem;
+            }
+            h2 {
+                font-size: 1.6rem;
+            }
+            h3 {
+                font-size: 1.3rem;
+            }
+        }
+        .leg-section {
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            border-left: 4px solid #ccc;
+        }
+        .result-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #000;
+        }
+        .highlight {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        button {
+            background-color: #eee;
+            color: #000;
+            border: none;
+            padding: 15px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            transition: background-color 0.3s, transform 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        button:hover {
+            background-color: #ddd;
+        }
+        .btn-primary {
+            background-color: #d48a9f;
+            color: white;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            font-weight: bold;
+        }
+        .btn-primary:hover {
+            background-color: #c17a8f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 8px rgba(0, 0, 0, 0.15);
+        }
+        .btn-primary:active {
+            transform: translateY(1px);
+        }
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+        .comparison-table th, .comparison-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .comparison-table th {
+            background-color: #f5f5f5;
+        }
+        .comparison-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .tab-button {
+            flex: 1;
+            background-color: #eee;
+            border: none;
+            padding: 12px 0;
+            cursor: pointer;
+            font-weight: bold;
+            color: #000;
+            margin: 0;
+            border-radius: 0;
+        }
+        .tab-button.active {
+            background-color: #d48a9f;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .ytest-diagram {
+            display: block;
+            margin: 30px auto;
+            max-width: 300px;
+        }
+        .reference {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+        }
+        .alert {
+            background-color: #fef9e7;
+            border-left: 4px solid #f1c40f;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .risk-indicator {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        .risk-low {
+            background-color: #e5f7e5;
+            color: #2a8d2a;
+        }
+        .risk-moderate {
+            background-color: #fef9e7;
+            color: #b7790d;
+        }
+        .risk-high {
+            background-color: #fdedeb;
+            color: #c0392b;
+        }
+        .asymmetry-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .asymmetry-table th, .asymmetry-table td {
+            padding: 6px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        .lsi-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+        .lsi-value {
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        @media (min-width: 768px) {
+            .header {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+        .logo {
+            width: 160px;
+            height: auto;
+        }
+        .title-container {
+            text-align: center;
+            flex-grow: 1;
+            order: 1;
+            margin: 10px 0;
+        }
+        .patient-info {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            width: 100%;
+            order: 2;
+        }
+        .contact-info {
+            text-align: center;
+            font-size: 0.8em;
+            line-height: 1.2;
+            width: 100%;
+            order: 3;
+            margin-top: 10px;
+        }
+        @media (min-width: 768px) {
+            .patient-info {
+                width: 180px;
+                order: 1;
+            }
+            .title-container {
+                order: 2;
+            }
+            .contact-info {
+                text-align: right;
+                width: 180px;
+                order: 3;
+                margin-top: 0;
+            }
+        }
+        .contact-info p {
+            margin: 0;
+        }
+        .contact-info a {
+            color: #000;
+            text-decoration: none;
+        }
+        .contact-info a:hover {
+            text-decoration: underline;
+        }
+        #info h3, #research h3 {
+            color: #000;
+            font-weight: bold;
+        }
+        .subtitle {
+            margin-top: -10px;
+            font-size: 1rem;
+            color: #555;
+            text-align: center;
+        }
+        .install-container {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: ; 
+            background-color: #fff;
+            padding: 10px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            text-align: center;
+        }
+        .install-btn {
+            background-color: #d48a9f;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+        .dismiss-btn {
+            background-color: #eee;
+            color: #333;
+        }
+        /* Add CSS for the Settings panel */
+        .settings-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .settings-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: #d48a9f;
+            color: white;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            font-size: 24px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .rotation-enter {
+            animation: rotate-enter 0.3s forwards;
+        }
+        @keyframes rotate-enter {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .rotation-exit {
+            animation: rotate-exit 0.3s forwards;
+        }
+        @keyframes rotate-exit {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="patient-info">
+            <div class="form-group">
+                <label for="patient">Patient:</label>
+                <input type="text" id="patient">
+            </div>
+            <div class="form-group">
+                <label for="therapist">Therapist:</label>
+                <select id="therapist" class="therapist-select">
+                    <option value="">Please select...</option>
+                    <option value="Barbara, Hohlfeld">Barbara, Hohlfeld</option>
+                    <option value="Felix, Janicke">Felix, Janicke</option>
+                    <option value="Florian, Gruner">Florian, Gruner</option>
+                    <option value="Frederike, Hohlfeld">Frederike, Hohlfeld</option>
+                    <option value="Gina, Leuschner">Gina, Leuschner</option>
+                    <option value="Marcus, Trocha">Marcus, Trocha</option>
+                    <option value="Michael, Jeschke">Michael, Jeschke</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <input type="date" id="date">
+            </div>
+        </div>
+        
+        <div class="title-container">
+            <h1>Y Balance Test Calculator</h1>
+            <p class="subtitle">Dynamic Balance Assessment Tool</p>
+        </div>
+        
+        <div class="contact-info">
+            <p><strong>Körpercentrum Dresden Mitte</strong><br>
+            Könneritzstraße 31<br>
+            01067 Dresden<br>
+            <a href="https://www.koerpercentrum.de">www.koerpercentrum.de</a></p>
+        </div>
+    </div>
+    
+    <div class="tab-buttons">
+        <button class="tab-button active" id="btn-calculator">Calculator</button>
+        <button class="tab-button" id="btn-info">Test Information</button>
+        <button class="tab-button" id="btn-research">Research & Norms</button>
+    </div>
+    
+    <div id="calculator" class="tab-content active">
+        <div class="container">
+            <div class="form-group">
+                <label for="right-limb-length">Right Limb Length (cm):</label>
+                <input type="number" id="right-limb-length" step="0.1" min="0" placeholder="Enter right limb length in cm">
+            </div>
+            
+            <div class="form-group">
+                <label for="left-limb-length">Left Limb Length (cm):</label>
+                <input type="number" id="left-limb-length" step="0.1" min="0" placeholder="Enter left limb length in cm">
+            </div>
+            
+            <div class="leg-section">
+                <h2>Right Leg (Stance Leg)</h2>
+                <div class="input-grid">
+                    <div class="form-group">
+                        <label for="right-anterior">Anterior (cm):</label>
+                        <input type="number" id="right-anterior" step="0.1" min="0" placeholder="Anterior">
+                    </div>
+                    <div class="form-group">
+                        <label for="right-posteromedial">Posteromedial (cm):</label>
+                        <input type="number" id="right-posteromedial" step="0.1" min="0" placeholder="Posteromedial">
+                    </div>
+                    <div class="form-group">
+                        <label for="right-posterolateral">Posterolateral (cm):</label>
+                        <input type="number" id="right-posterolateral" step="0.1" min="0" placeholder="Posterolateral">
+                    </div>
+                </div>
+                
+                <div class="results">
+                    <h3>Right Leg Composite Score:</h3>
+                    <div id="right-composite-percent" class="result-value">-</div>
+                </div>
+            </div>
+            
+            <div class="leg-section">
+                <h2>Left Leg (Stance Leg)</h2>
+                <div class="input-grid">
+                    <div class="form-group">
+                        <label for="left-anterior">Anterior (cm):</label>
+                        <input type="number" id="left-anterior" step="0.1" min="0" placeholder="Anterior">
+                    </div>
+                    <div class="form-group">
+                        <label for="left-posteromedial">Posteromedial (cm):</label>
+                        <input type="number" id="left-posteromedial" step="0.1" min="0" placeholder="Posteromedial">
+                    </div>
+                    <div class="form-group">
+                        <label for="left-posterolateral">Posterolateral (cm):</label>
+                        <input type="number" id="left-posterolateral" step="0.1" min="0" placeholder="Posterolateral">
+                    </div>
+                </div>
+                
+                <div class="results">
+                    <h3>Left Leg Composite Score:</h3>
+                    <div id="left-composite-percent" class="result-value">-</div>
+                </div>
+            </div>
+            
+            <button id="calculate-btn" class="btn-primary">Calculate Scores</button>
+            
+            <div class="results" style="margin-top: 30px;">
+                <h3>Asymmetry Assessment:</h3>
+                <div id="asymmetry-container">
+                    <div id="asymmetry-composite" class="result-value">-</div>
+                    <div id="anterior-asymmetry">-</div>
+                    <div id="posteromedial-asymmetry">-</div>
+                    <div id="posterolateral-asymmetry">-</div>
+                </div>
+            </div>
+            
+            <div class="lsi-section">
+                <h3>Limb Symmetry Index (LSI)</h3>
+                <p>The LSI measures the symmetry between limbs as a percentage:</p>
+                <div id="lsi-container">
+                    <div id="lsi-composite" class="lsi-value">-</div>
+                    <div id="lsi-interpretation">-</div>
+                </div>
+                <p><small>LSI = (Lower scoring limb / Higher scoring limb) × 100%</small></p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info" class="tab-content">
+        <div class="container">
+            <h2>Y Balance Test (YBT) Information</h2>
+            <p>The Y Balance Test is a dynamic functional test that measures postural control while performing a single-leg stance with reach movements. It was developed from the Star Excursion Balance Test (SEBT) to improve reliability and standardization.</p>
+            
+            <h3>Purpose</h3>
+            <p>The YBT assesses dynamic balance, neuromuscular control, and mobility. It is used in:</p>
+            <ul>
+                <li>Injury risk screening</li>
+                <li>Return-to-sport decision making</li>
+                <li>Assessing functional deficits related to lower extremity conditions</li>
+                <li>Monitoring progress during rehabilitation</li>
+            </ul>
+            
+            <h3>Test Directions</h3>
+            <p>The YBT consists of three reaching directions that form a "Y" shape:</p>
+            
+            <svg class="ytest-diagram" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+                <!-- Background -->
+                <circle cx="150" cy="150" r="140" fill="#f9f9f9" stroke="#333" stroke-width="2"/>
+                
+                <!-- Y Directions - just simple lines, no arrows -->
+                <line x1="150" y1="150" x2="150" y2="30" stroke="#333" stroke-width="4"/>
+                <line x1="150" y1="150" x2="250" y2="250" stroke="#333" stroke-width="4"/>
+                <line x1="150" y1="150" x2="50" y2="250" stroke="#333" stroke-width="4"/>
+                
+                <!-- Center with Stance Leg R label -->
+                <circle cx="150" cy="150" r="25" fill="#333"/>
+                <text x="150" y="147" text-anchor="middle" font-size="11" fill="white">Stance</text>
+                <text x="150" y="160" text-anchor="middle" font-size="11" fill="white">Leg R</text>
+                
+                <!-- Enhanced Labels with solid background for better visibility -->
+                <rect x="120" y="5" width="60" height="25" fill="white" stroke="#333" stroke-width="1" rx="4"/>
+                <text x="150" y="23" text-anchor="middle" font-weight="bold" font-size="14" fill="#000">Anterior</text>
+                
+                <!-- SWAPPED: Right side now shows Posteromedial -->
+                <rect x="200" y="250" width="90" height="20" fill="white" stroke="#333" stroke-width="1" rx="0"/>
+                <text x="245" y="265" text-anchor="middle" font-weight="bold" font-size="12" fill="#000">Posteromedial</text>
+                
+                <!-- SWAPPED: Left side now shows Posterolateral -->
+                <rect x="10" y="250" width="90" height="20" fill="white" stroke="#333" stroke-width="1" rx="0"/>
+                <text x="55" y="265" text-anchor="middle" font-weight="bold" font-size="12" fill="#000">Posterolateral</text>
+            </svg>
+            
+            <h3>Testing Protocol</h3>
+            <ol>
+                <li><strong>Limb Length Measurement:</strong> Measure from the anterior superior iliac spine (ASIS) to the distal aspect of the medial malleolus while the subject is lying supine (on back). Measure each leg separately and use the specific limb length for normalizing each leg's reach distances.</li>
+                <li><strong>Practice Trials:</strong> Complete 6 practice trials in each direction for each foot prior to formal testing.</li>
+                <li><strong>Testing Order:</strong> Follow a standard order: right anterior, left anterior, right posteromedial, left posteromedial, right posterolateral, left posterolateral.</li>
+                <li><strong>Foot Position:</strong> Place the stance foot with the most distal aspect of the toes at the center of the grid.</li>
+                <li><strong>Performance:</strong> While maintaining balance on the stance limb, reach as far as possible with the non-stance limb in the specified direction.</li>
+                <li><strong>Measurement:</strong> Record the farthest reach distance achieved in each direction.</li>
+                <li><strong>Important:</strong> The test must be performed on both legs to assess asymmetry, which is a key injury risk factor.</li>
+            </ol>
+            
+            <h3>Failed Trials</h3>
+            <p>A trial is considered invalid if the participant:</p>
+            <ul>
+                <li>Fails to maintain unilateral stance</li>
+                <li>Lifts or moves the stance foot</li>
+                <li>Touches down with the reach foot to gain support</li>
+                <li>Fails to return the reach foot to the starting position under control</li>
+            </ul>
+            
+            <h3>Composite Score Calculation</h3>
+            <p>The composite score is calculated for each limb separately:</p>
+            <p><strong>Formula:</strong> Composite Score = (Anterior + Posteromedial + Posterolateral) / (3 × Limb Length) × 100</p>
+            
+            <div class="reference">
+                <p><strong>References:</strong> Plisky et al. (2009), Gribble et al. (2012)</p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="research" class="tab-content">
+        <div class="container">
+            <h2>Research Findings & Normative Values</h2>
+            
+            <h3>Injury Risk & Performance</h3>
+            <p>Research has identified several key thresholds associated with increased injury risk:</p>
+            
+            <div class="alert">
+                <p><strong>Key Risk Factors:</strong></p>
+                <ul>
+                    <li>Anterior reach asymmetry ≥4 cm between limbs (2.5× increased risk)</li>
+                    <li>Female athletes with composite score <94% of limb length (6.5× increased risk)
